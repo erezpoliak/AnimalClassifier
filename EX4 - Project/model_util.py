@@ -80,7 +80,7 @@ def evaluate(model, val_loader, device):
       inputs, labels = inputs.to(device), labels.to(device)
       outputs = model(inputs)
       loss = criterion(outputs, labels)
-      running_loss = loss.item() * inputs.size(0)
+      running_loss += loss.item() * inputs.size(0)  # <-- FIXED
       _, predicted = outputs.max(1)
       total += labels.size(0)
       correct += predicted.eq(labels).sum().item()
