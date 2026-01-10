@@ -1,6 +1,6 @@
 import os
 from PIL import Image
-from collection import Counter
+from collections import Counter
 import matplotlib.pyplot as plt
 import torch
 from torchvision import datasets, transforms
