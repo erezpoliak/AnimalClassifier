@@ -20,14 +20,6 @@ def check_corrupted_images(data_path):
           corrupted.append(path)
   return corrupted
 
-def load_dataset(data_path):
-  transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor()
-])
-  dataset = datasets.ImageFolder(root=data_path, transform=transform)
-  return dataset
-
 def display_basic_info(dataset):
   print("Number of images:", len(dataset))
   print("Number of classes:", len(dataset.classes))
@@ -59,3 +51,20 @@ def dataset_split(dataset, train_ratio, val_ratio):
   test_size = len(dataset) - train_size - val_size
   train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size])
   return train_dataset, val_dataset, test_dataset
+
+def compute_mean_std(loader):
+  mean = 0
+  std = 0
+  total_images = 0
+
+  for images, _ in loader:
+    batch_size = images.size(0)
+    images = images.view(batch_size, images.size(1), -1)
+    mean += images.mean(2).sum(0)
+    std += images.std(2).sum(0)
+    total_images += batch_size
+  
+  mean /= total_images
+  std /= total_images
+
+  return mean.tolist(), std.tolist()
