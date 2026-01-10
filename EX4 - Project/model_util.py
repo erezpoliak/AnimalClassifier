@@ -47,7 +47,7 @@ def train(model, train_loader, val_loader, optimizer, epochs, patience, device, 
     history['val_loss'].append(val_loss)
     history['val_acc'].append(val_acc)
 
-    if (epoch + 1) % 5:
+    if (epoch + 1) % 5 == 0 or epoch == 0:
       print(f'Epoch {epoch + 1}/{epochs} - Train Loss: {train_loss:.4f} - Train Acc: {train_acc:.4f} - Val Loss: {val_loss:.4f} - Val Acc: {val_acc:.4f}')
 
     # Early Stopping
@@ -80,7 +80,7 @@ def evaluate(model, val_loader, device):
       inputs, labels = inputs.to(device), labels.to(device)
       outputs = model(inputs)
       loss = criterion(outputs, labels)
-      running_loss += loss.item() * inputs.size(0)  # <-- FIXED
+      running_loss += loss.item() * inputs.size(0) 
       _, predicted = outputs.max(1)
       total += labels.size(0)
       correct += predicted.eq(labels).sum().item()
