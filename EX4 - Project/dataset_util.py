@@ -1,5 +1,5 @@
 import os
-import from PIL import Image
+from PIL import Image
 from collection import Counter
 import matplotlib.pyplot as plt
 import torch
