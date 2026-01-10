@@ -25,7 +25,7 @@ def load_dataset(data_path):
     transforms.Resize((224, 224)),
     transforms.ToTensor()
 ])
-  dataset = datasets.ImageFolder(root=DATA_PATH, transform=transform)
+  dataset = datasets.ImageFolder(root=data_path, transform=transform)
   return dataset
 
 def display_basic_info(dataset):
