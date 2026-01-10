@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 # Defining flexible CNN for experiments
 class CustomCNN(nn.Module):
-  def __init__(self, conv_channels, fc_hidden, input_size = 256, use_batch_norm = False, dropout = 0, dropout_conv = 0, num_classes = 15):
+  def __init__(self, conv_channels, fc_hidden, input_size = 224, use_batch_norm = False, dropout = 0, dropout_conv = 0, num_classes = 15):
     super(CustomCNN, self).__init__()
     
     self.conv_layers = nn.ModuleList()
