@@ -4,6 +4,7 @@ from collection import Counter
 import matplotlib.pyplot as plt
 import torch
 from torchvision import datasets, transforms
+from torch.utils.data import random_split
 
 def check_corrupted_images(data_path):
   corrupted = []
@@ -51,3 +52,10 @@ def display_image_samples(dataset):
     axes[idx//5, idx%5].axis("off")
 
   plt.show()
+
+def dataset_split(dataset, train_ratio, val_ratio):
+  train_size = int(train_ratio * len(dataset))
+  val_size = int(val_ratio * len(dataset))
+  test_size = len(dataset) - train_size - val_size
+  train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size])
+  return train_dataset, val_dataset, test_dataset
