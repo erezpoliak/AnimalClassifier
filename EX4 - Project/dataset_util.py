@@ -18,7 +18,7 @@ def check_corrupted_images(data_path):
           img.verify()
         except:
           corrupted.append(path)
-  print("Corrupted images found:", len(corrupted))
+  return corrupted
 
 def load_dataset(data_path):
   transform = transforms.Compose([
