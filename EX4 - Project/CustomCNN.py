@@ -27,7 +27,7 @@ class CustomCNN(nn.Module):
         padding = 1
         stride = 1
         for out_channels in conv_layers:
-            self.conv_layers.append(nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding))
+            self.conv_layers.append(nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, bias=not batch_norm))
             if batch_norm:
                 self.bn_layers.append(nn.BatchNorm2d(out_channels))
             in_channels = out_channels
