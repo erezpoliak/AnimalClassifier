@@ -52,19 +52,43 @@ def dataset_split(dataset, train_ratio, val_ratio):
   train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size])
   return train_dataset, val_dataset, test_dataset
 
-def compute_mean_std(loader):
-  mean = 0
-  std = 0
-  total_images = 0
-
-  for images, _ in loader:
-    batch_size = images.size(0)
-    images = images.view(batch_size, images.size(1), -1)
-    mean += images.mean(2).sum(0)
-    std += images.std(2).sum(0)
-    total_images += batch_size
+def calculate_normalization_stats(dataset):
+  """
+  Calculate mean and std for each channel across the dataset.
+  Returns: (mean, std) as tuples of 3 values (R, G, B)
+  """
+  loader = torch.utils.data.DataLoader(dataset, batch_size=len(dataset), shuffle=False)
   
-  mean /= total_images
-  std /= total_images
-
+  data = next(iter(loader))[0]  # Get all images
+  
+  mean = data.mean(dim=[0, 2, 3])  # Mean across batch, height, width
+  std = data.std(dim=[0, 2, 3])    # Std across batch, height, width
+  
   return mean.tolist(), std.tolist()
+
+
+def get_normalized_transforms(mean, std, input_size=224, augment=False):
+  """
+  Create transform pipeline with normalization.
+  
+  Parameters:
+  - mean: tuple of 3 values for RGB channels
+  - std: tuple of 3 values for RGB channels
+  - input_size: target image size
+  - augment: whether to apply data augmentation (for training)
+  """
+  if augment:
+    return transforms.Compose([
+      transforms.Resize((input_size, input_size)),
+      transforms.RandomHorizontalFlip(),
+      transforms.RandomRotation(15),
+      transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+      transforms.ToTensor(),
+      transforms.Normalize(mean=mean, std=std)
+    ])
+  else:
+    return transforms.Compose([
+      transforms.Resize((input_size, input_size)),
+      transforms.ToTensor(),
+      transforms.Normalize(mean=mean, std=std)
+    ])

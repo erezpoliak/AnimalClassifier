@@ -2,14 +2,9 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
-def train(model, train_loader, val_loader, optimizer, epochs, patience, device, weight_decay = 0):
+def train(model, train_loader, val_loader, optimizer, epochs, patience, device, verbose=True):
   model = model.to(device)
   criterion = nn.CrossEntropyLoss()
-
-  # apply weight decay if provided
-  if weight_decay > 0:
-    for g in optimizer.param_groups:
-      g['weight_decay'] = weight_decay
 
   history = {'train_loss': [], 'val_loss': [], 'train_acc': [], 'val_acc': []}
   best_loss = float('inf')
@@ -47,7 +42,7 @@ def train(model, train_loader, val_loader, optimizer, epochs, patience, device, 
     history['val_loss'].append(val_loss)
     history['val_acc'].append(val_acc)
 
-    if (epoch + 1) % 5 == 0 or epoch == 0:
+    if verbose and ((epoch + 1) % 5 == 0 or epoch == 0):
       print(f'Epoch {epoch + 1}/{epochs} - Train Loss: {train_loss:.4f} - Train Acc: {train_acc:.4f} - Val Loss: {val_loss:.4f} - Val Acc: {val_acc:.4f}')
 
     # Early Stopping
@@ -58,7 +53,8 @@ def train(model, train_loader, val_loader, optimizer, epochs, patience, device, 
     else:
       patience_counter += 1
       if patience_counter >= patience:
-        print(f'Early stopping at epoch {epoch + 1}')
+        if verbose:
+          print(f'Early stopping at epoch {epoch + 1}')
         model.load_state_dict(best_model_state)
         return model, history
 
@@ -68,7 +64,6 @@ def train(model, train_loader, val_loader, optimizer, epochs, patience, device, 
 
 def evaluate(model, val_loader, device):
   model.eval()
-  model.to(device)
   criterion = nn.CrossEntropyLoss()
 
   running_loss = 0
@@ -89,30 +84,29 @@ def evaluate(model, val_loader, device):
   accuracy = correct / total
   return avg_loss, accuracy
 
-def plot_training_curves(history):
-  epochs = range(1, len(history['train_loss']) + 1)
-  title = 'Training Curves'
 
+def plot_training_curves(history, title='Training Curves'):
+  epochs = range(1, len(history['train_loss']) + 1)
+
+  fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+  
   # Plot Loss
-  plt.figure(figsize=(12,5))
-  plt.subplot(1,2,1)
-  plt.plot(epochs, history['train_loss'], label='Train Loss', marker='o')
-  plt.plot(epochs, history['val_loss'], label='Val Loss', marker='o')
-  plt.title(f"{title} - Loss")
-  plt.xlabel("Epoch")
-  plt.ylabel("Loss")
-  plt.legend()
-  plt.grid(True)
+  ax1.plot(epochs, history['train_loss'], label='Train Loss', marker='o', linewidth=2)
+  ax1.plot(epochs, history['val_loss'], label='Val Loss', marker='o', linewidth=2)
+  ax1.set_title(f"{title} - Loss", fontsize=14, fontweight='bold')
+  ax1.set_xlabel("Epoch", fontsize=12)
+  ax1.set_ylabel("Loss", fontsize=12)
+  ax1.legend(fontsize=11)
+  ax1.grid(True, alpha=0.3)
 
   # Plot Accuracy
-  plt.subplot(1,2,2)
-  plt.plot(epochs, history['train_acc'], label='Train Acc', marker='o')
-  plt.plot(epochs, history['val_acc'], label='Val Acc', marker='o')
-  plt.title(f"{title} - Accuracy")
-  plt.xlabel("Epoch")
-  plt.ylabel("Accuracy")
-  plt.legend()
-  plt.grid(True)
+  ax2.plot(epochs, history['train_acc'], label='Train Acc', marker='o', linewidth=2)
+  ax2.plot(epochs, history['val_acc'], label='Val Acc', marker='o', linewidth=2)
+  ax2.set_title(f"{title} - Accuracy", fontsize=14, fontweight='bold')
+  ax2.set_xlabel("Epoch", fontsize=12)
+  ax2.set_ylabel("Accuracy", fontsize=12)
+  ax2.legend(fontsize=11)
+  ax2.grid(True, alpha=0.3)
 
   plt.tight_layout()
   plt.show()
