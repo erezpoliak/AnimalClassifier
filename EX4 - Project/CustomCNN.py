@@ -22,7 +22,7 @@ class CustomCNN(nn.Module):
         self.pool = nn.MaxPool2d(2, 2)
 
         #######
-        self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
+        self.global_pool = nn.AdaptiveAvgPool2d((7, 7))
         #######
 
         # Build convolutional layers
@@ -43,7 +43,7 @@ class CustomCNN(nn.Module):
         #     w = w // 2
         # flattened_size = conv_layers[-1] * h * w
         #############
-        flattened_size = conv_layers[-1]
+        flattened_size = conv_layers[-1] * 7 * 7
         #############
 
         # Build fully connected layers
