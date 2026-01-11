@@ -21,6 +21,10 @@ class CustomCNN(nn.Module):
         self.dropout = nn.Dropout(dropout) if dropout > 0 else None
         self.pool = nn.MaxPool2d(2, 2)
 
+        #######
+        self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
+        #######
+
         # Build convolutional layers
         in_channels = 3
         kernel_size = 3
@@ -33,11 +37,14 @@ class CustomCNN(nn.Module):
             in_channels = out_channels
         
         # Calculate output size after conv + pool layers
-        h, w = input_size, input_size
-        for _ in conv_layers:
-            h = h // 2
-            w = w // 2
-        flattened_size = conv_layers[-1] * h * w
+        # h, w = input_size, input_size
+        # for _ in conv_layers:
+        #     h = h // 2
+        #     w = w // 2
+        # flattened_size = conv_layers[-1] * h * w
+        #############
+        flattened_size = conv_layers[-1]
+        #############
 
         # Build fully connected layers
         in_size = flattened_size
@@ -66,7 +73,9 @@ class CustomCNN(nn.Module):
                 x = self.bn_layers[i](x)
             x = F.relu(x)
             x = self.pool(x)
-        
+        ############
+        x = self.global_pool(x)
+        ############
         x = x.view(x.size(0), -1)  # Flatten
         for fc in self.fc_layers:
             x = fc(x)
