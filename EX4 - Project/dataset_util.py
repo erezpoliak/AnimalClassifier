@@ -79,13 +79,12 @@ def get_normalized_transforms(mean, std, input_size=224, augment=False):
   """
   if augment:
     return transforms.Compose([
-      transforms.Resize((input_size, input_size)),
-      transforms.RandomHorizontalFlip(),
-      transforms.RandomRotation(15),
-      transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-      transforms.ToTensor(),
-      transforms.Normalize(mean=mean, std=std)
-    ])
+    transforms.Resize((224, 224)),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(10), 
+    transforms.ToTensor(),
+    transforms.Normalize(mean=mean, std=std)
+])
   else:
     return transforms.Compose([
       transforms.Resize((input_size, input_size)),
