@@ -68,15 +68,6 @@ def calculate_normalization_stats(dataset):
 
 
 def get_normalized_transforms(mean, std, input_size=224, augment=False):
-  """
-  Create transform pipeline with normalization.
-  
-  Parameters:
-  - mean: tuple of 3 values for RGB channels
-  - std: tuple of 3 values for RGB channels
-  - input_size: target image size
-  - augment: whether to apply data augmentation (for training)
-  """
   if augment:
     return transforms.Compose([
     transforms.Resize((input_size, input_size)),
